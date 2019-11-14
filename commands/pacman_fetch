@@ -1,0 +1,6 @@
+CHECKUPDATES_DB="${TMPDIR:-/tmp}/checkup-db-${USER}/"
+DBPath="$(pacman-conf DBPath)"
+mkdir -p "$CHECKUPDATES_DB"
+ln -sf "${DBPath}/local" "$CHECKUPDATES_DB" > /dev/null 2>&1
+fakeroot pacman -Sy --dbpath "$CHECKUPDATES_DB" --logfile /dev/null >/dev/null 2>&1
+pacman -Qu --dbpath "$CHECKUPDATES_DB/" 2> /dev/null | grep -v '\[.*\]'
