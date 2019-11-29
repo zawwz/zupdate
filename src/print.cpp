@@ -34,40 +34,46 @@ std::pair<double, const char*> convertHReadable(const long int size)
   return std::make_pair( ret, size_suffixes[pow1k] );
 }
 
+static const char* p_color(const ztd::color c)
+{
+  if(!opt_nocolor)
+    return c.code();
+  else
+    return "";
+}
+
 void print_update(repo_update& ru, ztd::color color, bool dlsize, bool nisize, bool nusize)
 {
   if(ru.packages.size() > 0)
   {
-    printf("%s[%s] %lu updates%s\n", color.code(), ru.name.c_str(), ru.packages.size(), no_color.code());
+    printf("%s[%s] %lu updates%s\n", p_color(color), ru.name.c_str(), ru.packages.size(), p_color(no_color) );
     for(auto it : ru.packages)
     {
       std::string v1;
       std::string v2;
-      if(ztd::sh("command -v zdiffcolor").size() > 0)
+      if(!opt_nocolor)
       {
-        std::string command="zdiffcolor -n b_white -c b_red -s b_green " + it.current_version + ' ' + it.new_version;
-        std::string str=ztd::sh(command);
-        auto newline = str.find('\n');
-        v1=str.substr(0, newline);
-        newline++;
-        v2=str.substr(newline, str.size()-newline-1);
+        auto pv = color_diff(it.current_version, it.new_version);
+        v1 = pv.first;
+        v2 = pv.second;
       }
       else
       {
-        ztd::color v1c = ztd::color::b_red, v2c = ztd::color::b_green, noc = ztd::color::none;
-        v1 = v1c.code() + it.current_version + noc.code();
-        v2 = v2c.code() + it.new_version + noc.code();
+        v1 = it.current_version;
+        v2 = it.new_version;
       }
-      printf("  %*s %*s ->  %*s  | ", -1*(ru.name_max_length + 2), it.name.c_str(), -1*(ru.vcur_max_length + 20), v1.c_str(), -1*(ru.vnew_max_length + 20), v2.c_str());
+      int c_padsize = (opt_nocolor ? 0 : 20) ;
+      printf("  %*s %*s ->  %*s  | ", -1*(ru.name_max_length + 2), it.name.c_str(), -1*(ru.vcur_max_length + c_padsize) , v1.c_str(), -1*(ru.vnew_max_length + c_padsize) , v2.c_str());
       if(dlsize)
         print_size(it.download_size, true, "", 0, ztd::color::none, 2, size_index, "  : ");
       if(nusize)
         print_size(it.net_size, true, "", 0, ztd::color::none, 2, size_index, "");
       printf("\n");
     }
-    std::cout << color;
+    std::cout << p_color(color);
     std::cout << "================================";
-    std::cout << no_color << std::endl;
+    std::cout << p_color(no_color);
+    std::cout << std::endl;
   }
 }
 
@@ -81,9 +87,10 @@ void print_update_sizes(repo_update& ru, ztd::color color, bool dlsize, bool nis
     print_size(ru.net_size, !notitle, "Net Upgrade Size:", size_print_padding, color, 2, size_index);
   if(!notitle && (dlsize || nisize || nusize))
   {
-    std::cout << color;
+    std::cout << p_color(color);
     std::cout << "================================";
-    std::cout << no_color << std::endl;
+    std::cout << p_color(no_color);
+    std::cout <<std::endl;
   }
 }
 
@@ -92,7 +99,7 @@ void print_size(long int size, bool printTitle, std::string title, int padding, 
   auto tpair = convertN(size, sizepow);
   if( printTitle )
   {
-    printf("%s%*s%s", color.code(), padding, title.c_str(), no_color.code());
+    printf("%s%*s%s", p_color(color), padding, title.c_str(), p_color(no_color) );
   }
   unsigned int sizepad=precision+5;
   if(sizepow == 0)

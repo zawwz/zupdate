@@ -9,6 +9,7 @@ bool opt_aur=false;
 //print
 bool opt_pall=false;
 bool opt_notitles=false;
+bool opt_nocolor=false;
 bool opt_plist=false;
 bool opt_plistraw=false;
 bool opt_psizes=false;

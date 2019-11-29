@@ -10,6 +10,7 @@ extern bool opt_aur;
 //print
 extern bool opt_pall;
 extern bool opt_notitles;
+extern bool opt_nocolor;
 extern bool opt_plist;
 extern bool opt_plistraw;
 extern bool opt_psizes;

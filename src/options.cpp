@@ -26,6 +26,7 @@ void create_options()
   options.add(ztd::option('i', "install-size",  false, "Install size (repo only)"));
   options.add(ztd::option('n', "net-size",      false, "Net difference size (repo only)"));
   options.add(ztd::option('k', "no-titles",     false, "Don't print titles on -d -i and -n"));
+  options.add(ztd::option('C', "no-color",      false, "Don't print colors"));
   options.add(ztd::option("\r  [OPERATION]"));
   options.add(ztd::option('u', "update",        false, "Update targeted repositories"));
   options.add(ztd::option('y', "noconfirm",     false, "Doesn't ask for confirmation"));
@@ -57,6 +58,7 @@ void options_bool()
   //print
   opt_pall = options.find('p')->activated;
   opt_notitles = options.find('k')->activated;
+  opt_nocolor = options.find('C')->activated;
   opt_plist = options.find('l')->activated;
   opt_plistraw = options.find('L')->activated;
   opt_psizes = options.find('s')->activated;
