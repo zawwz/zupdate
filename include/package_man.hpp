@@ -12,8 +12,8 @@ extern package_manager cur_pkgman;
 // functions
 bool exec_find(const std::string& name);
 
-void pacman_process(bool yay);
+int pacman_process(bool yay);
 
-void apt_process();
+int apt_process();
 
 #endif //PACKAGE_MAN_HPP

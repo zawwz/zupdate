@@ -5,11 +5,6 @@
 #include "options.hpp"
 #include "package_man.hpp"
 
-long unsigned int new_download_size=0;
-long unsigned int new_install_size=0;
-long unsigned int current_install_size=0;
-long int net_size=0;
-
 int main(int argc, char* argv[])
 {
   //option process start
@@ -26,7 +21,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  if( !combine_target ) //no target -> all
+  if( !combine_target ) //no target -> all targets
   {
     opt_repo = true;
     opt_aur = true;
@@ -36,7 +31,7 @@ int main(int argc, char* argv[])
     opt_pall = true;
   }
 
-  if ( opt_pall ) //all -> list + sizes
+  if ( opt_pall ) //pall -> list + sizes
   {
     opt_plist=true;
     opt_psizes=true;
@@ -77,12 +72,12 @@ int main(int argc, char* argv[])
   switch(cur_pkgman)
   {
     case pacman :
-      pacman_process(exec_find("yay")); break;
+      return pacman_process(exec_find("yay")); break;
     case apt :
-      apt_process(); break;
-    default : std::cerr << "Unsupported package manager\n"; break;
+      return apt_process(); break;
+    default :
+      std::cerr << "Unsupported package manager\n";
+      return 1;
+      break;
   }
-
-
-  return 0;
 }

@@ -34,12 +34,14 @@ void repo_print_process(repo_update& ru, ztd::color cl, bool print_size=true)
   }
 }
 
-void pacman_process(bool yay)
+int pacman_process(bool yay)
 {
+  int r=0, r2=0;
+
   if(!exec_find("pacman"))
   {
     std::cerr << "pacman not found\n";
-    return;
+    return 1;
   }
   //fetch
   if(combine_fetch)
@@ -49,14 +51,18 @@ void pacman_process(bool yay)
       #pragma omp section
       {
         if(opt_repo)
-          fetch_update(&repo, "REPO", PACMAN_FETCH_COMMAND);
+          r = fetch_update(&repo, "REPO", PACMAN_FETCH_COMMAND);
       }
       #pragma omp section
       {
         if(opt_aur && yay)
-          fetch_update(&aur, "AUR", AUR_FETCH_COMMAND);
+          r2 = fetch_update(&aur, "AUR", AUR_FETCH_COMMAND);
       }
     }
+    if(r!=0)
+      return r;
+    if(r2!=0)
+      return r2;
   }
 
   //process
@@ -65,8 +71,10 @@ void pacman_process(bool yay)
     //size fetch
     if( combine_size )
     {
-      import_sizes(&repo, PACMAN_EXT_INFO_COMMAND, PACMAN_LOCAL_INFO_COMMAND, PACMAN_EXT_SIZE_CUT_COMMAND, PACMAN_LOCAL_SIZE_CUT_COMMAND);
+      r = import_sizes(&repo, PACMAN_EXT_INFO_COMMAND, PACMAN_LOCAL_INFO_COMMAND, PACMAN_EXT_SIZE_CUT_COMMAND, PACMAN_LOCAL_SIZE_CUT_COMMAND);
     }
+    if(r!=0)
+      return r;
 
     repo_print_process(repo, ztd::color::b_white);
 
@@ -79,9 +87,12 @@ void pacman_process(bool yay)
     {
       signal(SIGINT, SIG_IGN);
       if(opt_noconfirm)
-        system(PACMAN_UPDATE_COMMAND_NOCONFIRM);
+        r = ztd::shr(PACMAN_UPDATE_COMMAND_NOCONFIRM);
       else
-        system(PACMAN_UPDATE_COMMAND);
+        r = ztd::shr(PACMAN_UPDATE_COMMAND);
+
+      if(r!=0)
+        return r;
     }
 
 
@@ -99,11 +110,15 @@ void pacman_process(bool yay)
     {
       signal(SIGINT, SIG_IGN);
       if(opt_noconfirm)
-        system(AUR_UPDATE_COMMAND_NOCONFIRM);
+        r = ztd::shr(AUR_UPDATE_COMMAND_NOCONFIRM, true);
       else
-        system(AUR_UPDATE_COMMAND);
+        r = ztd::shr(AUR_UPDATE_COMMAND, true);
+
+      if(r!=0)
+        return r;
     }
   }
+  return 0;
 }
 
 std::string apt_getrepo()
@@ -120,31 +135,39 @@ std::string apt_getrepo()
   return "UNKNOWN";
 }
 
-void apt_process()
+int apt_process()
 {
+  int r=0;
+
   if(!exec_find("apt"))
   {
     std::cerr << "apt not found\n";
-    return;
+    return 1;
   }
   if(!exec_find("apt-cache"))
   {
     std::cerr << "apt-cache not found\n";
-    return;
+    return 1;
   }
   if(!exec_find("dpkg"))
   {
     std::cerr << "dpkg not found\n";
-    return;
+    return 1;
   }
-  if(combine_fetch)
+
+  if( combine_fetch )
   {
-    fetch_update(&repo, apt_getrepo(), APT_FETCH_COMMAND);
+    r = fetch_update(&repo, apt_getrepo(), APT_FETCH_COMMAND);
   }
+  if(r!=0)
+    return r;
+
   if( combine_size )
   {
-    import_sizes(&repo, APT_EXT_INFO_COMMAND, APT_LOCAL_INFO_COMMAND, APT_EXT_SIZE_CUT_COMMAND, APT_LOCAL_SIZE_CUT_COMMAND);
+    r = import_sizes(&repo, APT_EXT_INFO_COMMAND, APT_LOCAL_INFO_COMMAND, APT_EXT_SIZE_CUT_COMMAND, APT_LOCAL_SIZE_CUT_COMMAND);
   }
+  if(r!=0)
+    return r;
 
   repo_print_process(repo, ztd::color::b_white);
 
@@ -157,8 +180,12 @@ void apt_process()
   {
     signal(SIGINT, SIG_IGN);
     if(opt_noconfirm)
-      system(APT_UPDATE_COMMAND_NOCONFIRM);
+      r = ztd::shr(APT_UPDATE_COMMAND_NOCONFIRM, true);
     else
-      system(APT_UPDATE_COMMAND);
+      r = ztd::shr(APT_UPDATE_COMMAND, true);
+
+    if(r!=0)
+      return r;
   }
+  return 0;
 }

@@ -41,7 +41,7 @@ test: $(BINDIR)/$(NAME)
 clean:
 	rm $(ODIR)/*.o
 
-clear: clean
+clear:
 	rm $(BINDIR)/$(NAME)
 
 install: $(BINDIR)/$(NAME)

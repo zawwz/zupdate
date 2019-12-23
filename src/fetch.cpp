@@ -10,54 +10,57 @@
 #include "commands.h"
 
 //functions
-void fetch_update(repo_update* r, const std::string& name, const std::string& command)
+int fetch_update(repo_update* r, const std::string& name, const std::string& command)
 {
-    r->packages.clear();
-    r->name=name;
-    r->name_max_length=0;
-    r->vcur_max_length=0;
-    r->vnew_max_length=0;
-    std::string str=ztd::sh(command);
+  r->packages.clear();
+  r->name=name;
+  r->name_max_length=0;
+  r->vcur_max_length=0;
+  r->vnew_max_length=0;
+  std::pair<std::string, int> cp = ztd::shp(command);
+  if(cp.second != 0)
+    return cp.second;
+  std::string str=cp.first;
 
-    unsigned long int i=0,j=0;
-    while(i<str.size())
-    {
-      package_update pkg;
-      //name
-      while( str[i]!=' ' )
-        i++;
-      pkg.name = str.substr(j,i-j);
-      if(pkg.name.size() > r->name_max_length)
-        r->name_max_length = pkg.name.size();
-      //end name
+  unsigned long int i=0,j=0;
+  while(i<str.size())
+  {
+    package_update pkg;
+    //name
+    while( str[i]!=' ' )
       i++;
-      //current version
-      j=i;
-      while( str[i]!=' ' )
-        i++;
-      pkg.current_version = str.substr(j,i-j);
-      if(pkg.current_version.size() > r->vcur_max_length)
-        r->vcur_max_length = pkg.current_version.size();
-      //end current version
+    pkg.name = str.substr(j,i-j);
+    if(pkg.name.size() > r->name_max_length)
+      r->name_max_length = pkg.name.size();
+    //end name
+    i++;
+    //current version
+    j=i;
+    while( str[i]!=' ' )
       i++;
-      //skip arrow
-      while( str[i]!=' ' )
-        i++;
-      //end arrow
+    pkg.current_version = str.substr(j,i-j);
+    if(pkg.current_version.size() > r->vcur_max_length)
+      r->vcur_max_length = pkg.current_version.size();
+    //end current version
+    i++;
+    //skip arrow
+    while( str[i]!=' ' )
       i++;
-      //new version
-      j=i;
-      while( str[i]!='\n' )
-        i++;
-      pkg.new_version = str.substr(j,i-j);
-      if(pkg.new_version.size() > r->vnew_max_length)
-        r->vnew_max_length = pkg.new_version.size();
-      //end new version
+    //end arrow
+    i++;
+    //new version
+    j=i;
+    while( str[i]!='\n' )
       i++;
-      j=i;
-      r->packages.push_back(pkg);
-    }
-
+    pkg.new_version = str.substr(j,i-j);
+    if(pkg.new_version.size() > r->vnew_max_length)
+      r->vnew_max_length = pkg.new_version.size();
+    //end new version
+    i++;
+    j=i;
+    r->packages.push_back(pkg);
+  }
+  return 0;
 }
 
 
@@ -84,7 +87,7 @@ void get_loc_size(package_update* pkg, const char* info_command, const char* cut
     pkg->current_install_size = 0;
 }
 
-void import_sizes(repo_update* ru, const char* ext_info_command, const char* loc_info_command, const char* ext_cut_command, const char* loc_cut_command)
+int import_sizes(repo_update* ru, const char* ext_info_command, const char* loc_info_command, const char* ext_cut_command, const char* loc_cut_command)
 {
   const unsigned int n=ru->packages.size();
   #pragma omp parallel for
@@ -105,4 +108,5 @@ void import_sizes(repo_update* ru, const char* ext_info_command, const char* loc
     ru->current_install_size += pkg.current_install_size;
   }
   ru->net_size = (long int) ru->new_install_size - (long int) ru->current_install_size;
+  return 0;
 }
