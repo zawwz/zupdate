@@ -110,9 +110,9 @@ int pacman_process(bool yay)
     {
       signal(SIGINT, SIG_IGN);
       if(opt_noconfirm)
-        r = ztd::shr(AUR_UPDATE_COMMAND_NOCONFIRM, true);
+        r = ztd::shr(AUR_UPDATE_COMMAND_NOCONFIRM);
       else
-        r = ztd::shr(AUR_UPDATE_COMMAND, true);
+        r = ztd::shr(AUR_UPDATE_COMMAND);
 
       if(r!=0)
         return r;
@@ -180,9 +180,9 @@ int apt_process()
   {
     signal(SIGINT, SIG_IGN);
     if(opt_noconfirm)
-      r = ztd::shr(APT_UPDATE_COMMAND_NOCONFIRM, true);
+      r = ztd::shr(APT_UPDATE_COMMAND_NOCONFIRM);
     else
-      r = ztd::shr(APT_UPDATE_COMMAND, true);
+      r = ztd::shr(APT_UPDATE_COMMAND);
 
     if(r!=0)
       return r;
