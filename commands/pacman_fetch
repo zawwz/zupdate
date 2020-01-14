@@ -4,4 +4,4 @@ mkdir -p "$CHECKUPDATES_DB"
 ln -sf "${DBPath}/local" "$CHECKUPDATES_DB" > /dev/null 2>&1
 fakeroot pacman -Sy --dbpath "$CHECKUPDATES_DB" --logfile /dev/null >/dev/null || return $?
 pacman -Qu --dbpath "$CHECKUPDATES_DB/" 2> /dev/null | grep -v '\[.*\]'
-return 0
+exit 0

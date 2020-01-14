@@ -18,6 +18,8 @@ int main(int argc, char* argv[])
   catch(ztd::option_error& e)
   {
     printf("%s\n", e.what());
+    if(e.type() == ztd::option_error::unknown_option)
+      help();
     return 1;
   }
 
