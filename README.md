@@ -10,6 +10,7 @@ Cross-distro updating and safe update preview
 
 Dependencies:  
 - [ztd](https://github.com/zawwz/ztd)  
+- sudo
 
 Supported package managers:  
 - pacman  
@@ -17,6 +18,10 @@ Supported package managers:
 
 Optional dependencies:  
 - yay (AUR support for arch)  
+
+#### /!\
+
+Does not work with ubuntu
 
 #### Building
 

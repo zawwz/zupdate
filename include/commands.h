@@ -17,9 +17,9 @@
 #define PACMAN_LOCAL_SIZE_CUT_COMMAND     " |grep 'Installed Size'|cut -d':' -f2|tr -d ' '|cut -d'i' -f1 | tr -d 'B'|numfmt --from=iec|tr -d '\n'"
 
 // apt/dpkg
-#define APT_FETCH_COMMAND                 "sudo apt-get update >/dev/null || return $?\napt-get list --upgradable 2>/dev/null | tail -n +2 | awk -F \"/\" '{print $1\" \"$2}' | tr -d ']' | awk '{print $1\" \"$7\" -> \"$3}'"
-#define APT_UPDATE_COMMAND                "sudo apt-get upgrade"
-#define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt-get -y upgrade"
+#define APT_FETCH_COMMAND                 "sudo apt update >/dev/null 2>&1 || return $?\napt list --upgradable 2>/dev/null | tail -n +2 | awk -F \"/\" '{print $1\" \"$2}' | tr -d ']' | awk '{print $1\" \"$7\" -> \"$3}'"
+#define APT_UPDATE_COMMAND                "sudo apt upgrade"
+#define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt -y upgrade"
 
 #define APT_EXT_INFO_COMMAND              "apt show "
 #define APT_LOCAL_INFO_COMMAND            "dpkg -s "
