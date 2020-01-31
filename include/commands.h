@@ -18,8 +18,8 @@
 
 // apt/dpkg
 #define APT_FETCH_COMMAND                 "sudo apt update >/dev/null 2>&1 || return $?\napt list --upgradable 2>/dev/null | tail -n +2 | awk -F \"/\" '{print $1\" \"$2}' | tr -d ']' | awk '{print $1\" \"$7\" -> \"$3}'"
-#define APT_UPDATE_COMMAND                "sudo apt upgrade"
-#define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt -y upgrade"
+#define APT_UPDATE_COMMAND                "sudo apt update && sudo apt upgrade"
+#define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt update && sudo apt -y upgrade"
 
 #define APT_EXT_INFO_COMMAND              "apt show "
 #define APT_LOCAL_INFO_COMMAND            "dpkg -s "
