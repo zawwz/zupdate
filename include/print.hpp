@@ -23,7 +23,7 @@ void print_update(repo_update& ru, ztd::color color, bool dlsize=false, bool nis
 
 void print_update_sizes(repo_update& ru, ztd::color color, bool dlsize, bool nisize, bool cisize, bool notitle);
 
-void print_size(long int size, bool printTitle=false, std::string title="", int padding=0, ztd::color color=ztd::color::none, unsigned int precision=2, unsigned int sizepow=2, const char* line_end="\n");
+void print_size(long int size, bool printTitle=false, std::string title="", int padding=0, ztd::color color=ztd::color::none, unsigned int precision=2, unsigned int sizepow=2, const char* line_end="\n", int sizepad=-1);
 
 void print_listraw(repo_update& ru);
 

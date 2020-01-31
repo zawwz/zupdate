@@ -29,6 +29,10 @@ typedef struct repo_update
   long unsigned int new_install_size;
   long unsigned int current_install_size;
   long int net_size;
+
+  long unsigned int max_download_size;
+  long unsigned int max_net_size;
+
 } repo_update;
 
 extern repo_update repo, aur;

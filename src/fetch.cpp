@@ -17,6 +17,8 @@ int fetch_update(repo_update* r, const std::string& name, const std::string& com
   r->name_max_length=0;
   r->vcur_max_length=0;
   r->vnew_max_length=0;
+  r->max_download_size=0;
+  r->max_net_size=0;
   std::pair<std::string, int> cp = ztd::shp(command);
   if(cp.second != 0)
     return cp.second;
@@ -103,6 +105,9 @@ int import_sizes(repo_update* ru, const char* ext_info_command, const char* loc_
   ru->current_install_size = 0;
   for(auto pkg : ru->packages)
   {
+    ru->max_download_size=std::max(ru->max_download_size, pkg.download_size);
+    ru->max_net_size=std::max(ru->max_net_size, (long unsigned int) labs(pkg.net_size));
+
     ru->download_size += pkg.download_size;
     ru->new_install_size += pkg.new_install_size;
     ru->current_install_size += pkg.current_install_size;

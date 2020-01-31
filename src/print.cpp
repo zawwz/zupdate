@@ -65,9 +65,9 @@ void print_update(repo_update& ru, ztd::color color, bool dlsize, bool nisize, b
       int c_padsize = (opt_nocolor ? 0 : 20) ;
       printf("  %*s %*s ->  %*s  | ", -1*(ru.name_max_length + 2), it.name.c_str(), -1*(ru.vcur_max_length + c_padsize) , v1.c_str(), -1*(ru.vnew_max_length + c_padsize) , v2.c_str());
       if(dlsize)
-        print_size(it.download_size, true, "", 0, ztd::color::none, 2, size_index, "  : ");
+        print_size(it.download_size, true, "", 0, ztd::color::none, 2, size_index, "  : ", (int) std::max(log10(ru.max_download_size) - 3*size_index + 0 , 0.0) + 5 );
       if(nusize)
-        print_size(it.net_size, true, "", 0, ztd::color::none, 2, size_index, "");
+        print_size(it.net_size, true, "", 0, ztd::color::none, 2, size_index, "", (int) std::max(log10(ru.max_net_size) - 3*size_index + 0 , 0.0) + 5 );
       printf("\n");
     }
     std::cout << p_color(color);
@@ -94,14 +94,15 @@ void print_update_sizes(repo_update& ru, ztd::color color, bool dlsize, bool nis
   }
 }
 
-void print_size(long int size, bool printTitle, std::string title, int padding, ztd::color color, unsigned int precision, unsigned int sizepow, const char* line_end)
+void print_size(long int size, bool printTitle, std::string title, int padding, ztd::color color, unsigned int precision, unsigned int sizepow, const char* line_end, int sizepad)
 {
   auto tpair = convertN(size, sizepow);
   if( printTitle )
   {
     printf("%s%*s%s", p_color(color), padding, title.c_str(), p_color(no_color) );
   }
-  unsigned int sizepad=precision+5;
+  if(sizepad<0)
+    sizepad=precision+5;
   if(sizepow == 0)
   {
     precision = 0;
