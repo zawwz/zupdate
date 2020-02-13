@@ -8,7 +8,7 @@ NAME = zupdate
 LDFLAGS = -lpthread
 
 CC=g++
-CXXFLAGS= -I$(IDIR) -Wall -std=c++17 -fopenmp
+CXXFLAGS= -I$(IDIR) -Wall -std=c++17 -fopenmp -O2
 ifeq	 ($(DEBUG),true)
 	CXXFLAGS += -g
 endif
