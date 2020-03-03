@@ -12,6 +12,9 @@
 extern const char* size_suffixes[6];
 extern const int size_print_padding;
 
+//tool
+std::string strpf(std::string const& format, std::string const& var);
+
 //functions
 void help();
 

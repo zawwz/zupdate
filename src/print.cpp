@@ -1,7 +1,7 @@
 #include "print.hpp"
 
 #include <iostream>
-#include <cmath>
+#include <math.h>
 
 #include <ztd/shell.hpp>
 
@@ -10,6 +10,18 @@
 //constants
 const char* size_suffixes[6] = { "B", "KiB", "MiB", "GiB", "TiB", "PiB"};
 const int size_print_padding=-21;
+
+//tool
+std::string strpf(std::string const& format, std::string const& var)
+{
+  std::string ret;
+  size_t bufsize = format.size()-1 + var.size();
+  char* buf = (char*) malloc( sizeof(char)*bufsize );
+  snprintf(buf, bufsize, format.c_str(), var.c_str());
+  ret = buf;
+  free(buf);
+  return ret;
+}
 
 //functions
 std::pair<double, const char*> convertN(const long int size, unsigned int n)

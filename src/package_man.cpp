@@ -71,7 +71,7 @@ int pacman_process(bool yay)
     //size fetch
     if( combine_size )
     {
-      r = import_sizes(&repo, PACMAN_EXT_INFO_COMMAND, PACMAN_LOCAL_INFO_COMMAND, PACMAN_EXT_SIZE_CUT_COMMAND, PACMAN_LOCAL_SIZE_CUT_COMMAND);
+      r = import_sizes(&repo, PACMAN_EXT_SIZE_COMMAND, PACMAN_LOCAL_SIZE_COMMAND);
     }
     if(r!=0)
       return r;
@@ -164,7 +164,7 @@ int apt_process()
 
   if( combine_size )
   {
-    r = import_sizes(&repo, APT_EXT_INFO_COMMAND, APT_LOCAL_INFO_COMMAND, APT_EXT_SIZE_CUT_COMMAND, APT_LOCAL_SIZE_CUT_COMMAND);
+    r = import_sizes(&repo, APT_EXT_SIZE_COMMAND, APT_LOCAL_SIZE_COMMAND);
   }
   if(r!=0)
     return r;

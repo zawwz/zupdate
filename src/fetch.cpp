@@ -8,6 +8,7 @@
 #include <ztd/shell.hpp>
 
 #include "commands.h"
+#include "print.hpp"
 
 //functions
 int fetch_update(repo_update* r, const std::string& name, const std::string& command)
@@ -67,9 +68,9 @@ int fetch_update(repo_update* r, const std::string& name, const std::string& com
 
 
 
-void get_ext_sizes(package_update* pkg, const char* info_command, const char* cut_command)
+void get_ext_sizes(package_update* pkg, const char* command)
 {
-  std::string sizes=ztd::sh(info_command + pkg->name + cut_command);
+  std::string sizes=ztd::sh(strpf(command, pkg->name));
   unsigned int i=0, j=0;
   while(sizes[i]!='\n')
     i++;
@@ -80,24 +81,24 @@ void get_ext_sizes(package_update* pkg, const char* info_command, const char* cu
     i++;
   pkg->new_install_size = std::stoul(sizes.substr(j,i-j));
 }
-void get_loc_size(package_update* pkg, const char* info_command, const char* cut_command)
+void get_loc_size(package_update* pkg, const char* command)
 {
-  std::string size=ztd::sh(info_command + pkg->name + cut_command);
+  std::string size=ztd::sh(strpf(command, pkg->name));
   if(size.size() > 0)
     pkg->current_install_size = std::stoul(size);
   else
     pkg->current_install_size = 0;
 }
 
-int import_sizes(repo_update* ru, const char* ext_info_command, const char* loc_info_command, const char* ext_cut_command, const char* loc_cut_command)
+int import_sizes(repo_update* ru, const char* ext_size_command, const char* loc_size_command)
 {
   const unsigned int n=ru->packages.size();
   #pragma omp parallel for
   for(unsigned int i=0; i<n; i++) //parallel
   {
     package_update* pkg = &(ru->packages[i]);
-    get_ext_sizes(pkg, ext_info_command, ext_cut_command);
-    get_loc_size(pkg, loc_info_command, loc_cut_command);
+    get_ext_sizes(pkg, ext_size_command);
+    get_loc_size(pkg, loc_size_command);
     pkg->net_size = (long int) pkg->new_install_size - (long int) pkg->current_install_size;
   }
   ru->download_size = 0;
