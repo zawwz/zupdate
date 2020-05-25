@@ -19,10 +19,6 @@ Supported package managers:
 Optional dependencies:  
 - yay (AUR support for arch)  
 
-#### /!\
-
-Does not work with ubuntu
-
 #### Building
 
 ``make -j8`` for a shared build  

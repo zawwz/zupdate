@@ -144,6 +144,11 @@ int apt_process()
     std::cerr << "apt not found\n";
     return 1;
   }
+  if(!exec_find("apt-get"))
+  {
+    std::cerr << "apt-get not found\n";
+    return 1;
+  }
   if(!exec_find("apt-cache"))
   {
     std::cerr << "apt-cache not found\n";

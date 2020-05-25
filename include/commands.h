@@ -14,13 +14,12 @@
 #define PACMAN_LOCAL_SIZE_COMMAND     "pacman -Qi %s |grep 'Installed Size'|cut -d':' -f2|tr -d ' '|cut -d'i' -f1 | tr -d 'B'|numfmt --from=iec|tr -d '\n'"
 
 // apt/dpkg
-#define APT_FETCH_COMMAND                 "sudo apt update >/dev/null 2>&1 || return $?\napt list --upgradable 2>/dev/null | tail -n +2 | awk -F \"/\" '{print $1\" \"$2}' | tr -d ']' | awk '{print $1\" \"$7\" -> \"$3}'"
-#define APT_UPDATE_COMMAND                "sudo apt update && sudo apt upgrade"
-#define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt update && sudo apt -y upgrade"
+#define APT_FETCH_COMMAND                 "sudo apt-get update >/dev/null 2>&1 || return $?\napt list --upgradable 2>/dev/null | tail -n +2 | awk -F \"/\" '{print $1\" \"$2}' | tr -d ']' | awk '{print $1\" \"$7\" -> \"$3}'"
+#define APT_UPDATE_COMMAND                "sudo apt-get update && sudo apt-get upgrade"
+#define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt-get update && sudo apt-get -y upgrade"
 
-#define APT_EXT_SIZE_COMMAND          "apt show %s 2>/dev/null| grep -E 'Installed-Size:|Download-Size:' | cut -d' ' -f2- | tr -d ', B' | tr 'k' 'K' | numfmt --from=iec | awk '{s=$0;getline;s=$0\"\\n\"s;print s}'"
-#define APT_LOCAL_SIZE_COMMAND        "dpkg -s %s 2>/dev/null| grep 'Installed-Size:' | cut -d' ' -f2 | xargs echo '1024 *' | bc"
-
+#define APT_EXT_SIZE_COMMAND          "apt-cache show --no-all-versions %s 2>/dev/null| grep -E '^Installed-Size:|^Size:' | awk 'NR==1 {print $2*1024} NR==2 {print $2}' | tac"
+#define APT_LOCAL_SIZE_COMMAND        "dpkg -s %s 2>/dev/null| grep 'Installed-Size:' | cut -d' ' -f2 | awk '{print $1*1024}'"
 
 
 #endif //COMMANDS_H
