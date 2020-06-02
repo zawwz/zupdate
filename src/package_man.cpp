@@ -1,7 +1,10 @@
 #include "package_man.hpp"
 
-#include <stdio.h>
-#include <signal.h>
+#include <cstdio>
+#include <csignal>
+#include <cmath>
+
+#include <algorithm>
 
 #include "fetch.hpp"
 #include "print.hpp"
@@ -20,17 +23,35 @@ bool exec_find(const std::string& name)
   return which != "";
 }
 
+uint32_t req_pad_size(repo_update& ru)
+{
+  int pd, pi, pn;
+  pd=std::max(0.0, log10(ru.download_size)    - 3*size_index);
+  pi=std::max(0.0, log10(ru.new_install_size) - 3*size_index);
+  pn=std::max(0.0, log10(ru.net_size)         - 3*size_index + (ru.net_size<0?1:0));
+  return std::ceil(std::max(std::max(pd, pi), pn)) + (size_index>0?7:2);
+}
+
 void repo_print_process(repo_update& ru, ztd::color cl, bool print_size=true)
 {
   //only if there are packages
-  if(ru.packages.size() > 0)
+  if(opt_plistraw)
+    print_listraw(repo);
+  else if(ru.packages.size() > 0)
   {
     //list
     if( opt_plist )
       print_update(ru, cl, print_size && opt_pdownload, print_size && opt_pinstall, print_size && opt_pnet);
+    // raw list
+
+    uint32_t padsize=req_pad_size(ru);
+    if( opt_plist && print_size )
+      print_separator(padsize+22, cl);
+
+    padsize -= size_index>0 ? 3 : 1;
     //sizes
     if( print_size )
-      print_update_sizes(ru, cl, opt_pdownload, opt_pinstall, opt_pnet, opt_notitles);
+      print_update_sizes(ru, cl, opt_pdownload, opt_pinstall, opt_pnet, opt_notitles, padsize);
   }
 }
 
@@ -78,11 +99,6 @@ int pacman_process(bool yay)
 
     repo_print_process(repo, ztd::color::b_white);
 
-    if(opt_plistraw)
-    {
-      print_listraw(repo);
-    }
-
     if(opt_update)
     {
       signal(SIGINT, SIG_IGN);
@@ -100,11 +116,6 @@ int pacman_process(bool yay)
   if(opt_aur && yay)
   {
     repo_print_process(aur, ztd::color::b_cyan, false);
-
-    if(opt_plistraw)
-    {
-      print_listraw(aur);
-    }
 
     if(opt_update)
     {
@@ -175,11 +186,6 @@ int apt_process()
     return r;
 
   repo_print_process(repo, ztd::color::b_white);
-
-  if(opt_plistraw)
-  {
-    print_listraw(repo);
-  }
 
   if(opt_update)
   {
