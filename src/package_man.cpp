@@ -36,7 +36,9 @@ void repo_print_process(repo_update& ru, ztd::color cl, bool print_size=true)
 {
   //only if there are packages
   if(opt_plistraw)
-    print_listraw(repo);
+  {
+    print_listraw(ru);
+  }
   else if(ru.packages.size() > 0)
   {
     //list
