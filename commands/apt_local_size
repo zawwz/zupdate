@@ -1,0 +1,2 @@
+#!/bin/sh
+dpkg -s %s 2>/dev/null| grep -E '^Version:|^Installed-Size:' | awk '{if(NR==1) tmp=$2*1024;else print $2}END{printf "%%u\\n", tmp}'

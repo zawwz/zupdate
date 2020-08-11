@@ -1,2 +1,3 @@
-sudo apt-get update >/dev/null || return $?
-apt list --upgradable 2>/dev/null | tail -n +2 | awk -F "/" '{print $1" "$2}' | tr -d ']' | awk '{print $1" "$7" -> "$3}'
+#!/bin/sh
+sudo apt-get update >/dev/null || exit $?
+apt list --upgradable 2>/dev/null | tail -n +2 | cut -d'/' -f1

@@ -1,0 +1,2 @@
+#!/bin/sh
+apt-cache show --no-all-versions %s 2>/dev/null| grep -E '^Version:|^Installed-Size:|^Size:' | awk '{if(NR==2) tmp=$2*1024;else print $2}END{printf "%%u\\n", tmp}'

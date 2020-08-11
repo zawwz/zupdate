@@ -22,7 +22,7 @@ std::pair<std::string, std::string> color_diff(std::string const& str1, std::str
   std::string r1, r2;
   {
     //CORE FUNCTION
-    unsigned int i=0, j=0;
+    uint32_t i=0, j=0;
 
     while( i < str1.size() && i < str2.size() )
     {

@@ -15,6 +15,8 @@
 
 #include <ztd/shell.hpp>
 
+#include <unistd.h>
+
 package_manager cur_pkgman = none;
 
 bool exec_find(const std::string& name)
@@ -35,11 +37,7 @@ uint32_t req_pad_size(repo_update& ru)
 void repo_print_process(repo_update& ru, ztd::color cl, bool print_size=true)
 {
   //only if there are packages
-  if(opt_plistraw)
-  {
-    print_listraw(ru);
-  }
-  else if(ru.packages.size() > 0)
+  if(ru.packages.size() > 0)
   {
     //list
     if( opt_plist )
@@ -54,10 +52,12 @@ void repo_print_process(repo_update& ru, ztd::color cl, bool print_size=true)
     //sizes
     if( print_size )
       print_update_sizes(ru, cl, opt_pdownload, opt_pinstall, opt_pnet, opt_notitles, padsize);
+    if(opt_plistraw)
+      print_listraw(ru);
   }
 }
 
-int pacman_process(bool yay)
+int pacman_process(const std::vector<std::string>& args, bool yay)
 {
   int r=0, r2=0;
 
@@ -74,12 +74,12 @@ int pacman_process(bool yay)
       #pragma omp section
       {
         if(opt_repo)
-          r = fetch_update(&repo, "REPO", PACMAN_FETCH_COMMAND);
+          r = fetch_update(&repo, "REPO", opt_rall ? PACMAN_FETCH_ALL_COMMAND : PACMAN_FETCH_COMMAND, args);
       }
       #pragma omp section
       {
         if(opt_aur && yay)
-          r2 = fetch_update(&aur, "AUR", AUR_FETCH_COMMAND);
+          r2 = fetch_update(&aur, "AUR", opt_rall ? AUR_FETCH_ALL_COMMAND :  AUR_FETCH_COMMAND, args);
       }
     }
     if(r!=0)
@@ -88,48 +88,57 @@ int pacman_process(bool yay)
       return r2;
   }
 
+  // size fetch
+  if(opt_repo)
+  {
+    r = import_sizes(&repo, PACMAN_EXT_SIZE_COMMAND, PACMAN_LOCAL_SIZE_COMMAND);
+  }
+  if(r!=0)
+    return r;
+  if(opt_aur && yay)
+  {
+    r = import_sizes(&aur, NULL, PACMAN_LOCAL_SIZE_COMMAND);
+  }
+  if(r!=0)
+    return r;
+
   //process
   if(opt_repo)
   {
-    //size fetch
-    if( combine_size )
-    {
-      r = import_sizes(&repo, PACMAN_EXT_SIZE_COMMAND, PACMAN_LOCAL_SIZE_COMMAND);
-    }
-    if(r!=0)
-      return r;
-
     repo_print_process(repo, ztd::color::b_white);
-
-    if(opt_update)
-    {
-      signal(SIGINT, SIG_IGN);
-      if(opt_noconfirm)
-        r = ztd::shr(PACMAN_UPDATE_COMMAND_NOCONFIRM);
-      else
-        r = ztd::shr(PACMAN_UPDATE_COMMAND);
-
-      if(r!=0)
-        return r;
-    }
-
-
   }
   if(opt_aur && yay)
   {
     repo_print_process(aur, ztd::color::b_cyan, false);
+  }
 
-    if(opt_update)
+
+  if(opt_update)
+  {
+    const char* update_command=NULL;
+    if(opt_aur && yay && opt_repo)
     {
-      signal(SIGINT, SIG_IGN);
       if(opt_noconfirm)
-        r = ztd::shr(AUR_UPDATE_COMMAND_NOCONFIRM);
+        update_command=YAY_UPDATE_COMMAND_NOCONFIRM;
       else
-        r = ztd::shr(AUR_UPDATE_COMMAND);
-
-      if(r!=0)
-        return r;
+        update_command=YAY_UPDATE_COMMAND;
     }
+    else if(opt_aur && yay)
+    {
+      if(opt_noconfirm)
+        update_command=AUR_UPDATE_COMMAND_NOCONFIRM;
+      else
+        update_command=AUR_UPDATE_COMMAND;
+    }
+    else
+    {
+      if(opt_noconfirm)
+        update_command=PACMAN_UPDATE_COMMAND_NOCONFIRM;
+      else
+        update_command=PACMAN_UPDATE_COMMAND;
+    }
+    execl("/bin/sh", "/bin/sh", "-c", update_command, NULL);
+    return errno;
   }
   return 0;
 }
@@ -148,7 +157,7 @@ std::string apt_getrepo()
   return "UNKNOWN";
 }
 
-int apt_process()
+int apt_process(const std::vector<std::string>& args)
 {
   int r=0;
 
@@ -175,7 +184,7 @@ int apt_process()
 
   if( combine_fetch )
   {
-    r = fetch_update(&repo, apt_getrepo(), APT_FETCH_COMMAND);
+    r = fetch_update(&repo, apt_getrepo(), opt_rall ? APT_FETCH_ALL_COMMAND : APT_FETCH_COMMAND, args);
   }
   if(r!=0)
     return r;
@@ -191,14 +200,11 @@ int apt_process()
 
   if(opt_update)
   {
-    signal(SIGINT, SIG_IGN);
     if(opt_noconfirm)
-      r = ztd::shr(APT_UPDATE_COMMAND_NOCONFIRM);
+      execl("/bin/sh", "/bin/sh", "-c", APT_UPDATE_COMMAND_NOCONFIRM, NULL);
     else
-      r = ztd::shr(APT_UPDATE_COMMAND);
-
-    if(r!=0)
-      return r;
+      execl("/bin/sh", "/bin/sh", "-c", APT_UPDATE_COMMAND, NULL);
+    return errno;
   }
   return 0;
 }

@@ -4,7 +4,11 @@ ztd::option_set options;
 
 void help()
 {
-  printf("zupdate [options]\n\nOptions:\n");
+  printf("zupdate [option...] [package...]\n");
+  printf("Safely view package updates in a fancy list format.\n");
+  printf("Supported package managers: pacman, apt\n");
+  printf("\n");
+  printf("Options:\n");
   options.print_help(5,23);
   printf("\n");
   printf("Option order does not matter\n");
@@ -15,67 +19,68 @@ void help()
 
 void create_options()
 {
-  options.add(ztd::option("\r  [HELP]"));
-  options.add(ztd::option('h', "help",          false, "Print this help message"));
-  options.add(ztd::option("\r  [PRINT]"));
-  options.add(ztd::option('p', "print",         false, "Print all update info"));
-  options.add(ztd::option('l', "list",          false, "Print a detailed list of packages"));
-  options.add(ztd::option('L', "list-raw",      false, "Print a raw list of packages"));
-  options.add(ztd::option('s', "size",          false, "Print all sizes"));
-  options.add(ztd::option('d', "download-size", false, "Download size (repo only)"));
-  options.add(ztd::option('i', "install-size",  false, "Install size (repo only)"));
-  options.add(ztd::option('n', "net-size",      false, "Net difference size (repo only)"));
-  options.add(ztd::option('k', "no-titles",     false, "Don't print titles on -d -i and -n"));
-  options.add(ztd::option('C', "no-color",      false, "Don't print colors"));
-  options.add(ztd::option("\r  [OPERATION]"));
-  options.add(ztd::option('u', "update",        false, "Update targeted repositories"));
-  options.add(ztd::option('y', "noconfirm",     false, "Doesn't ask for confirmation"));
-  options.add(ztd::option("\r  [PKGMAN]"));
-  options.add(ztd::option(     "pacman",        false, "Force pacman as package manager"));
-  options.add(ztd::option(     "apt",           false, "Force apt as package manager"));
-  options.add(ztd::option("\r  [TARGET]"));
-  options.add(ztd::option('r', "repo",          false, "Target official repository (pacman only)"));
-  options.add(ztd::option('a', "aur",           false, "Target AUR (pacman only, yay required)"));
-  options.add(ztd::option("\r  [SIZE]"));
-  options.add(ztd::option('B', "byte",          false, "Print sizes in bytes"));
-  options.add(ztd::option('K', "kilobyte",      false, "Print sizes in kilobytes"));
-  options.add(ztd::option('M', "megabyte",      false, "Print sizes in megabytes"));
-  options.add(ztd::option('G', "gigabyte",      false, "Print sizes in gigabytes"));
-}
-
-void process_options(int argc, char** argv)
-{
-  options.process(argc, argv);
+  options.add(
+    ztd::option("\r  [HELP]"),
+    ztd::option('h', "help",          false, "Print this help message"),
+    ztd::option("\r  [PRINT]"),
+    ztd::option('p', "print",         false, "Print all update info"),
+    ztd::option('l', "list",          false, "Print a detailed list of packages"),
+    ztd::option('L', "list-raw",      false, "Print a raw list of packages"),
+    ztd::option('s', "size",          false, "Print all sizes"),
+    ztd::option('d', "download-size", false, "Download size (no AUR)"),
+    ztd::option('i', "install-size",  false, "Install size (no AUR)"),
+    ztd::option('n', "net-size",      false, "Net difference size (no AUR)"),
+    ztd::option('k', "no-titles",     false, "Don't print titles on sizes"),
+    ztd::option('I', "list-install",  false, "Print install size on list"),
+    ztd::option('C', "no-color",      false, "Don't print colors"),
+    ztd::option("\r  [OPERATION]"),
+    ztd::option('u', "update",        false, "Update targeted repositories"),
+    ztd::option('y', "noconfirm",     false, "Doesn't ask for confirmation"),
+    ztd::option("\r  [PKGMAN]"),
+    ztd::option(     "pacman",        false, "Force pacman as package manager"),
+    ztd::option(     "apt",           false, "Force apt as package manager"),
+    ztd::option("\r  [TARGET]"),
+    ztd::option('A', "all",           false, "Target all packages instead of just updated ones"),
+    ztd::option('r', "repo",          false, "Target official repository (pacman only)"),
+    ztd::option('a', "aur",           false, "Target AUR (pacman only, yay required)"),
+    ztd::option("\r  [SIZE]"),
+    ztd::option('B', "byte",          false, "Print sizes in bytes"),
+    ztd::option('K', "kilobyte",      false, "Print sizes in kilobytes"),
+    ztd::option('M', "megabyte",      false, "Print sizes in megabytes"),
+    ztd::option('G', "gigabyte",      false, "Print sizes in gigabytes")
+  );
 }
 
 void options_bool()
 {
   //help
-  opt_help = options.find('h')->activated;
+  opt_help = options['h'];
   //targets
-  opt_repo = options.find('r')->activated;
-  opt_aur = options.find('a')->activated;
+  opt_repo = options['r'];
+  opt_aur = options['a'];
   //print
-  opt_pall = options.find('p')->activated;
-  opt_notitles = options.find('k')->activated;
-  opt_nocolor = options.find('C')->activated;
-  opt_plist = options.find('l')->activated;
-  opt_plistraw = options.find('L')->activated;
-  opt_psizes = options.find('s')->activated;
-  opt_pdownload = options.find('d')->activated;
-  opt_pinstall = options.find('i')->activated;
-  opt_pnet = options.find('n')->activated;
+  opt_pall = options['p'];
+  opt_notitles = options['k'];
+  opt_nocolor = options['C'];
+  opt_plist = options['l'];
+  opt_plistraw = options['L'];
+  opt_psizes = options['s'];
+  opt_pdownload = options['d'];
+  opt_pinstall = options['i'];
+  opt_pnet = options['n'];
+  opt_linstall = options['I'];
   //size
-  if(options.find('B')->activated) size_index = 0;
-  if(options.find('K')->activated) size_index = 1;
-  if(options.find('M')->activated) size_index = 2;
-  if(options.find('G')->activated) size_index = 3;
+  if(options['B']) size_index = 0;
+  if(options['K']) size_index = 1;
+  if(options['M']) size_index = 2;
+  if(options['G']) size_index = 3;
   //operation
-  opt_update = options.find('u')->activated;
-  opt_noconfirm = options.find('y')->activated;
+  opt_rall = options['A'];
+  opt_update = options['u'];
+  opt_noconfirm = options['y'];
   //packageman
-  opt_pacman = options.find("pacman")->activated;
-  opt_apt = options.find("apt")->activated;
+  opt_pacman = options["pacman"];
+  opt_apt = options["apt"];
 }
 
 void process_combines()

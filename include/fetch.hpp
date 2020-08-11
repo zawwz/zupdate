@@ -4,7 +4,7 @@
 #include "repos.hpp"
 
 //functions
-int fetch_update(repo_update* r, const std::string& name, const std::string& command);
+int fetch_update(repo_update* r, const std::string& name, const std::string& command, const std::vector<std::string>& args);
 
 int import_sizes(repo_update* ru, const char* ext_size_command, const char* loc_size_command);
 

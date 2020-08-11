@@ -8,11 +8,12 @@ NAME = zupdate
 LDFLAGS = -lpthread
 
 CC=g++
-CXXFLAGS= -I$(IDIR) -Wall -std=c++17 -fopenmp
+CXXFLAGS= -I$(IDIR) -Wall -std=c++17
 ifeq	 ($(DEBUG),true)
 	CXXFLAGS += -g
+	CC=clang++
 else
-	CXXFLAGS += -O2
+	CXXFLAGS += -O2 -fopenmp
 endif
 ifeq ($(STATIC),true)
 	LDFLAGS += -l:libztd.a
@@ -27,6 +28,7 @@ $(shell mkdir -p $(BINDIR))
 DEPS = $(shell if [ -n "$(ld $(IDIR))" ] ; then ls $(IDIR)/*.hpp $(IDIR)/*.h 2>/dev/null ; fi)
 # automatically finds .c and .cpp and makes the corresponding .o rule
 OBJ = $(shell ls $(SRCDIR)/*.cpp $(SRCDIR)/*.c 2>/dev/null | sed 's|\.cpp|.o|g;s|\.c|.o|g;s|$(SRCDIR)/|$(ODIR)/|g')
+
 
 $(ODIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 	$(CC) $(CXXFLAGS) -c -o $@ $<

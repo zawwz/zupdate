@@ -1,6 +1,8 @@
 #ifndef OPT_BOOL_H
 #define OPT_BOOL_H
 
+#include <stdint.h>
+
 // OPTIONS
 //help
 extern bool opt_help;
@@ -12,14 +14,16 @@ extern bool opt_pall;
 extern bool opt_notitles;
 extern bool opt_nocolor;
 extern bool opt_plist;
+extern bool opt_linstall;
 extern bool opt_plistraw;
 extern bool opt_psizes;
 extern bool opt_pdownload;
 extern bool opt_pinstall;
 extern bool opt_pnet;
 //size
-extern unsigned int size_index;
+extern uint8_t size_index;
 //operation
+extern bool opt_rall;
 extern bool opt_update;
 extern bool opt_noconfirm;
 //package man

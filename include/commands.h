@@ -1,25 +1,22 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include "commands_gen.h"
+
 // pacman
-#define PACMAN_FETCH_COMMAND              "CHECKUPDATES_DB=\"${TMPDIR:-/tmp}/checkup-db-${USER}/\"\nDBPath=\"$(pacman-conf DBPath)\"\nmkdir -p \"$CHECKUPDATES_DB\"\nln -sf \"${DBPath}/local\" \"$CHECKUPDATES_DB\" > /dev/null 2>&1\nfakeroot pacman -Sy --dbpath \"$CHECKUPDATES_DB\" --logfile /dev/null >/dev/null || return $?\npacman -Qu --dbpath \"$CHECKUPDATES_DB/\" 2> /dev/null | grep -v '\\[.*\\]'\nexit 0"
-#define AUR_FETCH_COMMAND                 "yay -Qau"
+#define AUR_FETCH_COMMAND                 "yay -Qau | cut -d' ' -f1"
+#define AUR_FETCH_ALL_COMMAND             "yay -Qm | cut -d' ' -f1"
 
 #define PACMAN_UPDATE_COMMAND             "sudo pacman -Syu"
 #define PACMAN_UPDATE_COMMAND_NOCONFIRM   "sudo pacman -Syu --noconfirm"
 #define AUR_UPDATE_COMMAND                "yay -Sau"
 #define AUR_UPDATE_COMMAND_NOCONFIRM      "yay -Sau --noconfirm"
-
-#define PACMAN_EXT_SIZE_COMMAND       "pacman -Si --dbpath \"${TMPDIR:-/tmp}/checkup-db-${USER}/\" --logfile /dev/null %s |grep -E 'Download Size|Installed Size'|cut -d':' -f2|tr -d ' '|cut -d'i' -f1 | tr -d 'B'|numfmt --from=iec"
-#define PACMAN_LOCAL_SIZE_COMMAND     "pacman -Qi %s |grep 'Installed Size'|cut -d':' -f2|tr -d ' '|cut -d'i' -f1 | tr -d 'B'|numfmt --from=iec|tr -d '\n'"
+#define YAY_UPDATE_COMMAND                "yay -Syu"
+#define YAY_UPDATE_COMMAND_NOCONFIRM      "yay -Syu --noconfirm"
 
 // apt/dpkg
-#define APT_FETCH_COMMAND                 "sudo apt-get update >/dev/null 2>&1 || return $?\napt list --upgradable 2>/dev/null | tail -n +2 | awk -F \"/\" '{print $1\" \"$2}' | tr -d ']' | awk '{print $1\" \"$7\" -> \"$3}'"
 #define APT_UPDATE_COMMAND                "sudo apt-get update && sudo apt-get full-upgrade"
 #define APT_UPDATE_COMMAND_NOCONFIRM      "sudo apt-get update && sudo apt-get -y full-upgrade"
-
-#define APT_EXT_SIZE_COMMAND          "apt-cache show --no-all-versions %s 2>/dev/null| grep -E '^Installed-Size:|^Size:' | awk 'NR==1 {print $2*1024} NR==2 {print $2}' | tac"
-#define APT_LOCAL_SIZE_COMMAND        "dpkg -s %s 2>/dev/null| grep 'Installed-Size:' | cut -d' ' -f2 | awk '{print $1*1024}'"
 
 
 #endif //COMMANDS_H

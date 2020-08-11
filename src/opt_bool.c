@@ -11,14 +11,16 @@ bool opt_pall=false;
 bool opt_notitles=false;
 bool opt_nocolor=false;
 bool opt_plist=false;
+bool opt_linstall=false;
 bool opt_plistraw=false;
 bool opt_psizes=false;
 bool opt_pdownload=false;
 bool opt_pinstall=false;
 bool opt_pnet=false;
 //size
-unsigned int size_index=2;
+uint8_t size_index=2;
 //operation
+bool opt_rall=false;
 bool opt_update=false;
 bool opt_noconfirm=false;
 //package man

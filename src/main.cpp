@@ -7,11 +7,12 @@
 
 int main(int argc, char* argv[])
 {
+  std::vector<std::string> args;
   //option process start
   try
   {
     create_options();
-    process_options(argc, argv);
+    args=options.process(argc, argv);
     options_bool();
     process_combines();
   }
@@ -74,9 +75,9 @@ int main(int argc, char* argv[])
   switch(cur_pkgman)
   {
     case pacman :
-      return pacman_process(exec_find("yay")); break;
+      return pacman_process(args, exec_find("yay")); break;
     case apt :
-      return apt_process(); break;
+      return apt_process(args); break;
     default :
       std::cerr << "Unsupported package manager\n";
       return 1;

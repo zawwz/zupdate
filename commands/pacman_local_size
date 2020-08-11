@@ -1,0 +1,2 @@
+#!/bin/sh
+pacman -Qi %s | grep -E '^Version|^Installed Size' | cut -d':' -f2- | tr -d ' ' | sed 's/ //g;1!s/iB$//g;1!s/B//g'
