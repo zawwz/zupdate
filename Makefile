@@ -13,7 +13,7 @@ ifeq	 ($(DEBUG),true)
 	CXXFLAGS += -g
 	CC=clang++
 else
-	CXXFLAGS += -O2 -fopenmp
+	CXXFLAGS += -Os -fopenmp
 endif
 ifeq ($(STATIC),true)
 	LDFLAGS += -l:libztd.a

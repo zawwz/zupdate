@@ -19,14 +19,17 @@
 
 uint64_t sizeconvert(std::string const& in)
 {
+  if(in.size()==0)
+    return 0;
+  double num=std::stod(in.substr(0, in.size()-1));
   switch(in[in.size()-1])
   {
-    case 'K': return (uint64_t) (std::stod(in.substr(0, in.size()-1)) * KB_MULT); break;
-    case 'M': return (uint64_t) (std::stod(in.substr(0, in.size()-1)) * MB_MULT); break;
-    case 'G': return (uint64_t) (std::stod(in.substr(0, in.size()-1)) * GB_MULT); break;
-    case 'T': return (uint64_t) (std::stod(in.substr(0, in.size()-1)) * TB_MULT); break;
-    case 'P': return (uint64_t) (std::stod(in.substr(0, in.size()-1)) * PB_MULT); break;
-    case 'E': return (uint64_t) (std::stod(in.substr(0, in.size()-1)) * EB_MULT); break;
+    case 'K': return (uint64_t) (num * KB_MULT); break;
+    case 'M': return (uint64_t) (num * MB_MULT); break;
+    case 'G': return (uint64_t) (num * GB_MULT); break;
+    case 'T': return (uint64_t) (num * TB_MULT); break;
+    case 'P': return (uint64_t) (num * PB_MULT); break;
+    case 'E': return (uint64_t) (num * EB_MULT); break;
     default: return std::stoul(in);
   }
 }
@@ -47,14 +50,10 @@ int fetch_update(repo_update* r, const std::string& name, const std::string& com
 {
   r->packages.clear();
   r->name=name;
-  r->name_max_length=0;
-  r->vcur_max_length=0;
-  r->vnew_max_length=0;
-  r->max_install_size=0;
-  r->max_download_size=0;
-  r->max_net_size=0;
+  r->download_size = r->new_install_size = r->current_install_size = 0;
+  r->name_max_length = r->vcur_max_length = r->vnew_max_length = 0;
+  r->max_install_size = r->max_download_size = r->max_net_size = r->n_updates = 0;
   r->has_update=false;
-  r->n_updates=0;
 
   std::string sup;
   if(args.size()>0)
@@ -128,9 +127,6 @@ int import_sizes(repo_update* ru, const char* ext_size_command, const char* loc_
       pkg->has_update=false;
     pkg->net_size = (int64_t) pkg->new_install_size - (int64_t) pkg->current_install_size;
   }
-  ru->download_size = 0;
-  ru->new_install_size = 0;
-  ru->current_install_size = 0;
   for(auto pkg : ru->packages)
   {
     // string lengths

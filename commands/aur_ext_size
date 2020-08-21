@@ -1,0 +1,2 @@
+#!/bin/sh
+yay -Si --logfile /dev/null %s | grep '^Version' | cut -d':' -f2- | sed 's/ //g;1!s/iB$//g;1!s/B//g'

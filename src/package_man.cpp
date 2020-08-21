@@ -34,24 +34,24 @@ uint32_t req_pad_size(repo_update& ru)
   return std::ceil(std::max(std::max(pd, pi), pn)) + (size_index>0?7:2);
 }
 
-void repo_print_process(repo_update& ru, ztd::color cl, bool print_size=true)
+void repo_print_process(repo_update& ru, ztd::color cl, bool print_only_install=false, bool print_extra_separator=false)
 {
   //only if there are packages
   if(ru.packages.size() > 0)
   {
     //list
     if( opt_plist )
-      print_update(ru, cl, print_size && opt_pdownload, print_size && opt_pinstall, print_size && opt_pnet);
+      print_update(ru, cl, opt_pdownload, opt_pinstall, opt_pnet, print_only_install);
     // raw list
 
     uint32_t padsize=req_pad_size(ru);
-    if( opt_plist && print_size )
+    if( opt_plist )
       print_separator(padsize+22, cl);
 
-    padsize -= size_index>0 ? 3 : 1;
     //sizes
-    if( print_size )
-      print_update_sizes(ru, cl, opt_pdownload, opt_pinstall, opt_pnet, opt_notitles, padsize);
+    print_update_sizes(ru, cl, print_only_install ? false : opt_pdownload, opt_pinstall, print_only_install ? false : opt_pnet, opt_notitles, padsize - size_index>0 ? 3 : 1);
+    if(print_extra_separator)
+      print_separator(padsize+22, cl);
     if(opt_plistraw)
       print_listraw(ru);
   }
@@ -97,7 +97,7 @@ int pacman_process(const std::vector<std::string>& args, bool yay)
     return r;
   if(opt_aur && yay)
   {
-    r = import_sizes(&aur, NULL, PACMAN_LOCAL_SIZE_COMMAND);
+    r = import_sizes(&aur, AUR_EXT_SIZE_COMMAND, PACMAN_LOCAL_SIZE_COMMAND);
   }
   if(r!=0)
     return r;
@@ -105,11 +105,11 @@ int pacman_process(const std::vector<std::string>& args, bool yay)
   //process
   if(opt_repo)
   {
-    repo_print_process(repo, ztd::color::b_white);
+    repo_print_process(repo, ztd::color::b_white, false, opt_aur && yay && aur.packages.size()>0);
   }
   if(opt_aur && yay)
   {
-    repo_print_process(aur, ztd::color::b_cyan, false);
+    repo_print_process(aur, ztd::color::b_cyan, true);
   }
 
 

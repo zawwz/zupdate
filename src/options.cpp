@@ -6,7 +6,7 @@ void help()
 {
   printf("zupdate [option...] [package...]\n");
   printf("Safely view package updates in a fancy list format.\n");
-  printf("Supported package managers: pacman, apt\n");
+  printf("Supported package managers: pacman, yay, apt\n");
   printf("\n");
   printf("Options:\n");
   options.print_help(5,23);
@@ -27,15 +27,15 @@ void create_options()
     ztd::option('l', "list",          false, "Print a detailed list of packages"),
     ztd::option('L', "list-raw",      false, "Print a raw list of packages"),
     ztd::option('s', "size",          false, "Print all sizes"),
-    ztd::option('d', "download-size", false, "Download size (no AUR)"),
-    ztd::option('i', "install-size",  false, "Install size (no AUR)"),
-    ztd::option('n', "net-size",      false, "Net difference size (no AUR)"),
+    ztd::option('d', "download-size", false, "Print download sizes (no AUR)"),
+    ztd::option('i', "install-size",  false, "Print total install size"),
+    ztd::option('n', "net-size",      false, "Print net difference sizes (no AUR)"),
+    ztd::option('I', "list-install",  false, "Print individual install size in list"),
     ztd::option('k', "no-titles",     false, "Don't print titles on sizes"),
-    ztd::option('I', "list-install",  false, "Print install size on list"),
     ztd::option('C', "no-color",      false, "Don't print colors"),
     ztd::option("\r  [OPERATION]"),
     ztd::option('u', "update",        false, "Update targeted repositories"),
-    ztd::option('y', "noconfirm",     false, "Doesn't ask for confirmation"),
+    ztd::option('y', "noconfirm",     false, "Don't ask for confirmation"),
     ztd::option("\r  [PKGMAN]"),
     ztd::option(     "pacman",        false, "Force pacman as package manager"),
     ztd::option(     "apt",           false, "Force apt as package manager"),

@@ -62,7 +62,7 @@ void print_separator(uint32_t length, ztd::color color, char sepchar)
   std::cout << p_color(color) << sep << p_color(no_color) << std::endl;
 }
 
-void print_update(repo_update& ru, ztd::color color, bool dlsize, bool nisize, bool nusize)
+void print_update(repo_update& ru, ztd::color color, bool dlsize, bool nisize, bool nusize, bool print_only_install)
 {
   if(ru.packages.size() > 0)
   {
@@ -106,15 +106,23 @@ void print_update(repo_update& ru, ztd::color color, bool dlsize, bool nisize, b
       }
       printf("  %*s %*s ", -1*(ru.name_max_length + 2), it.name.c_str(), -1*(ru.vcur_max_length + c_padsize) , v1.c_str());
       if(it.has_update) // has update
-        printf("-> %*s  |", -1*(ru.vnew_max_length + c_padsize) , v2.c_str());
+        printf("-> %*s  | ", -1*(ru.vnew_max_length + c_padsize) , v2.c_str());
       else // no update
-        printf("%*s  |", ru.has_update?ru.vnew_max_length+3:0, "" );
-      if(opt_linstall)
-        print_size(it.has_update?it.new_install_size:it.current_install_size, true, "", 0, ztd::color::none, 2, size_index, "  : ", (int) std::max(log10(ru.max_download_size) - 3*size_index + 0 , 0.0) + 5);
-      if(it.has_update && dlsize)
-        print_size(it.download_size, true, "", 0, ztd::color::none, 2, size_index, "  : ", (int) std::max(log10(ru.max_download_size) - 3*size_index + 0 , 0.0) + 5 );
-      if(it.has_update && nusize)
-        print_size(it.net_size, true, "", 0, ztd::color::none, 2, size_index, "", (int) std::max(log10(ru.max_net_size) - 3*size_index + 0 , 0.0) + 5 );
+        printf("%*s  | ", ru.has_update?ru.vnew_max_length+3:0, "" );
+      if(print_only_install)
+      {
+        if(opt_linstall && nisize)
+          print_size(it.current_install_size, true, "", 0, ztd::color::none, 2, size_index, "  : ", (int) std::max(log10(ru.max_download_size) - 3*size_index + 0 , 0.0) + 5);
+      }
+      else
+      {
+        if(opt_linstall && nisize)
+          print_size(it.has_update?it.new_install_size:it.current_install_size, true, "", 0, ztd::color::none, 2, size_index, "  : ", (int) std::max(log10(ru.max_download_size) - 3*size_index + 0 , 0.0) + 5);
+        if(it.has_update && dlsize)
+          print_size(it.download_size, true, "", 0, ztd::color::none, 2, size_index, "  : ", (int) std::max(log10(ru.max_download_size) - 3*size_index + 0 , 0.0) + 5 );
+        if(it.has_update && nusize)
+          print_size(it.net_size, true, "", 0, ztd::color::none, 2, size_index, "", (int) std::max(log10(ru.max_net_size) - 3*size_index + 0 , 0.0) + 5 );
+      }
       printf("\n");
     }
   }

@@ -24,7 +24,7 @@ std::pair<double, const char*> convertHReadable(const int64_t size);
 
 void print_separator(uint32_t length, ztd::color color, char sepchar='=');
 
-void print_update(repo_update& ru, ztd::color color, bool dlsize=false, bool nisize=false, bool nusize=false);
+void print_update(repo_update& ru, ztd::color color, bool dlsize=false, bool nisize=false, bool nusize=false, bool print_only_install=false);
 
 void print_update_sizes(repo_update& ru, ztd::color color, bool dlsize, bool nisize, bool cisize, bool notitle, uint32_t padsize);
 
