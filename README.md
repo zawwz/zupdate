@@ -4,7 +4,7 @@ Cross-distro updating and safe update preview
 
 ## Installing
 
-### From [zpkg](https://github.com/zawwz/ztd)
+### From [zpkg](https://github.com/zawwz/zpkg)
 
 ```sh
 # install zpkg
