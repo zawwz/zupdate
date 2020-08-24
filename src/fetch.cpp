@@ -116,8 +116,12 @@ int import_sizes(repo_update* ru, const char* ext_size_command, const char* loc_
   for(uint32_t i=0; i<n; i++) //parallel
   {
     package_update* pkg = &(ru->packages[i]);
+
+    // sizes import
     if(ext_size_command!=NULL) get_ext_sizes(pkg, ext_size_command);
     if(loc_size_command!=NULL) get_loc_size(pkg, loc_size_command);
+
+    // has new version
     if(pkg->current_version != "" && pkg->new_version != "" && pkg->new_version != pkg->current_version)
     {
       pkg->has_update=true;
@@ -125,14 +129,18 @@ int import_sizes(repo_update* ru, const char* ext_size_command, const char* loc_
     }
     else
       pkg->has_update=false;
+
+    // net size
     pkg->net_size = (int64_t) pkg->new_install_size - (int64_t) pkg->current_install_size;
   }
+
+  // post compute
   for(auto pkg : ru->packages)
   {
     // string lengths
     ru->name_max_length = std::max(ru->name_max_length, (uint32_t) pkg.name.size());
-    ru->vnew_max_length = std::max(ru->vnew_max_length, (uint32_t) pkg.current_version.size());
-    ru->vcur_max_length = std::max(ru->vcur_max_length, (uint32_t) pkg.new_version.size());
+    ru->vnew_max_length = std::max(ru->vnew_max_length, (uint32_t) pkg.new_version.size());
+    ru->vcur_max_length = std::max(ru->vcur_max_length, (uint32_t) pkg.current_version.size());
 
     // biggest sizes
     ru->max_install_size  = std::max(ru->max_install_size, pkg.has_update ? pkg.new_install_size : pkg.current_install_size);
@@ -144,8 +152,12 @@ int import_sizes(repo_update* ru, const char* ext_size_command, const char* loc_
     ru->new_install_size += pkg.has_update ? pkg.new_install_size : pkg.current_install_size;
     ru->current_install_size += pkg.current_install_size;
 
+    // count updates
     if(pkg.has_update) ru->n_updates++;
   }
+
+  // global net size
   ru->net_size = (int64_t) ru->new_install_size - (int64_t) ru->current_install_size;
+
   return 0;
 }
