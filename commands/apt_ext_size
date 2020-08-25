@@ -1,5 +1,5 @@
 #!/bin/sh
-apt-cache show --no-all-versions icu-devtools 2>/dev/null| grep -E '^Version:|^Installed-Size:|^Size:' | awk '
+apt-cache show --no-all-versions %s 2>/dev/null| grep -E '^Version:|^Installed-Size:|^Size:' | awk '
 {
   if($1=="Installed-Size:") is=$2*1024;
   else if($1=="Size:") ps=$2;
