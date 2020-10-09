@@ -50,7 +50,7 @@ void repo_print_process(repo_update& ru, ztd::color cl, bool print_only_install=
 
     //sizes
     print_update_sizes(ru, cl, print_only_install ? false : opt_pdownload, opt_pinstall, print_only_install ? false : opt_pnet, opt_notitles, padsize - size_index>0 ? 3 : 1);
-    if(print_extra_separator)
+    if(print_extra_separator && opt_plist )
       print_separator(padsize+22, cl);
     if(opt_plistraw)
       print_listraw(ru);
