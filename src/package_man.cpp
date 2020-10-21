@@ -34,6 +34,17 @@ uint32_t req_pad_size(repo_update& ru)
   return std::ceil(std::max(std::max(pd, pi), pn)) + (size_index>0?7:2);
 }
 
+void copy_cur_size_to_new(repo_update* ru)
+{
+  ru->new_install_size = ru->current_install_size;
+  for(auto it: ru->packages)
+  {
+    it.new_install_size = it.current_install_size;
+    if(it.new_install_size > ru->max_install_size)
+      ru->max_install_size = it.new_install_size;
+  }
+}
+
 void repo_print_process(repo_update& ru, ztd::color cl, bool print_only_install=false, bool print_extra_separator=false)
 {
   //only if there are packages
@@ -98,6 +109,7 @@ int pacman_process(const std::vector<std::string>& args, bool yay)
   if(opt_aur && yay)
   {
     r = import_sizes(&aur, AUR_EXT_SIZE_COMMAND, PACMAN_LOCAL_SIZE_COMMAND);
+    copy_cur_size_to_new(&aur);
   }
   if(r!=0)
     return r;
