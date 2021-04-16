@@ -1,5 +1,7 @@
 #include <cstdio>
 
+#include <stdlib.h>
+
 #include <thread>
 
 #include "options.hpp"
@@ -7,6 +9,7 @@
 
 int main(int argc, char* argv[])
 {
+  setenv("LANG", "en_US.UTF-8", 1);
   std::vector<std::string> args;
   //option process start
   try
