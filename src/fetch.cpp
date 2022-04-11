@@ -21,8 +21,13 @@ uint64_t sizeconvert(std::string const& in)
 {
   if(in.size()==0)
     return 0;
-  double num=std::stod(in.substr(0, in.size()-1));
-  switch(in[in.size()-1])
+  double num=0;
+  char c=0;
+  c = in[in.size()-1];
+  if(!(c >= '0' && c <= '9')) {
+    num=std::stod(in.substr(0, in.size()-1));
+  }
+  switch(c)
   {
     case 'K': return (uint64_t) (num * KB_MULT); break;
     case 'M': return (uint64_t) (num * MB_MULT); break;
